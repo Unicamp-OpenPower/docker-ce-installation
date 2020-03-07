@@ -103,9 +103,8 @@ then
 	sudo apt install -y --allow-downgrades ./$DOCKER_CLI
 	sudo apt install -y --allow-downgrades ./$DOCKER
 	rm $DOCKER $DOCKER_CLI
-	printf "\n=============== [CHECKING VERSION] ===============\n"
+	printf "\n============ [CHECKING INSTALLATION] =============\n"
 	sudo docker version | grep -B 2 version
-	printf "\n============= [TESTING INSTALLATION] =============\n"
 	sudo docker run hello-world
 	printf "\n====================== [DONE] ====================\n" 
 	printf "Everything seems to be working fine\n"
@@ -121,12 +120,15 @@ then
 	DOCKER="docker-ce-${VERSION}-3.el7.ppc64le.rpm"
 	DOCKER_CLI="docker-ce-cli-${VERSION}-3.el7.ppc64le.rpm"
 
+	printf "\n============== [ADDING EPEL REPO] ================\n"
 	sudo yum install -y epel-release wget
 	sudo yum update -y
 
+	printf "\n============== [FETCHING PACKAGES] ===============\n"
 	wget ${FTP}version-${VERSION}/centos/$DOCKER_CLI
 	wget ${FTP}version-${VERSION}/centos/$DOCKER
 
+	printf "\n============= [INSTALLING PACKAGES] ==============\n"
 	if [[ $VERSION < $(sudo docker --version | grep -o $PATTERN) ]];
 	then
 		echo "DOWNGRADING..."
@@ -136,12 +138,16 @@ then
 		sudo yum install -y ./$DOCKER_CLI
 		sudo yum install -y ./$DOCKER
 	fi
-	
+
 	rm $DOCKER_CLI $DOCKER
 	sudo systemctl restart docker
-	sudo docker version | grep -B 2 version
 
+	printf "\n============ [CHECKING INSTALLATION] =============\n"
+	sudo docker version | grep -B 2 version
 	sudo docker run hello-world
+	printf "\n====================== [DONE] ====================\n" 
+	printf "Everything seems to be working fine\n"
+
 	exit
 fi
 
@@ -153,7 +159,8 @@ if [[ "stretch" == *"${DISTRO}"* ]];
 then
 	DOCKER="docker-ce_${VERSION}~3-0~debian-${DISTRO}_ppc64el.deb"
 	DOCKER_CLI="docker-ce-cli_${VERSION}~3-0~debian-${DISTRO}_ppc64el.deb"
-	
+
+	printf "\n================== [INSTALLING DEPENCIES] ====================\n" 
 	if [[ $(apt policy libseccomp2 | grep -oP '(?<=Installed: )(.*)') < "2.4.2-2" ]];
 	then
 		wget http://ftp.us.debian.org/debian/pool/main/libs/libseccomp/libseccomp2_2.4.2-2_ppc64el.deb
@@ -175,15 +182,21 @@ then
 		rm runc_1.0.0~rc10+dfsg1-1_ppc64el.deb
 	fi
 
+	printf "\n================ [FETCHING PACKAGES] ======================\n" 
 	wget https://oplab9.parqtec.unicamp.br/pub/ppc64el/docker/version-${VERSION}/debian-${DISTRO}/$DOCKER_CLI
 	wget https://oplab9.parqtec.unicamp.br/pub/ppc64el/docker/version-${VERSION}/debian-${DISTRO}/$DOCKER
+
+	printf "\n================ [INSTALLING PACKAGES] ====================\n" 
 	sudo apt install -y --allow-downgrades ./$DOCKER_CLI ./$DOCKER
 	rm $DOCKER $DOCKER_CLI
-
 	sudo systemctl restart docker
-	sudo docker version | grep -B 2 version
 
+	printf "\n================ [CHECKING INSTALLATION] ==================\n" 
+	sudo docker version | grep -B 2 version
 	sudo docker run hello-world
+	printf "\n========================= [DONE] ==========================\n" 
+	printf "Everything seems to be working fine\n"
+
 	exit
 fi
 
