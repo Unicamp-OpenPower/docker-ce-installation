@@ -9,26 +9,64 @@ CONTENT=$(wget $FTP -q -O -)
 VERSIONS=$(grep -o $PATTERN <<< $CONTENT | sort -u)
 LATEST=$(grep $PATTERN <<< $VERSIONS | tr " " "\n" | tail -1)
 VERSION=$LATEST
-DISTRO=$(hostnamectl | grep -oi "bionic\|xenial\|stretch\|centos7" | head -1)
 
-
-while getopts v: option
-do
-case "${option}"
-in
-v) 
-	VERSION=${OPTARG};
-	if [[ $VERSIONS != *"${VERSION}"* ]]; 
-	then
-		echo "Version Unavailable..."
-		echo "Try installing one of the following versions:"
-		echo $(grep -o $PATTERN <<< $VERSIONS)
-		echo ""
-		exit
-	fi
+# GETTING HOST MACHINE'S DISTRO
+case "$(hostnamectl | grep -oi 'Ubuntu 18\|Ubuntu 16\|Debian .* 9\|CentOS .* 7' | head -1)" in
+"Ubuntu 18") DISTRO="bionic" ;;
+"Ubuntu 16") DISTRO="xenial" ;;
+"Debian .* 9") DISTRO="stretch" ;;
+"CentOS .* 7") DISTRO="centos7" ;;
+*)
+	echo "Your distro is not supported or does not have any pre-built packages."
 esac
+
+
+# PROCESSING CLI PARAMETERS
+version_set=false
+while (( "$#" )); do
+	case "$1" in
+	-h|--help)
+		shift
+		echo "Usage: bash install_docker [ -l | -h | VERSION ]"
+		echo "	Run the executable script using bash and specify the VERSION to be downloaded."
+		echo "  If VERSION is not specified, the latest version will be downloaded."
+		echo "	-l|--list	Will list all available versions."
+		echo "	-h|--help	Will display this text."
+		exit 0
+      		;;
+	-l|--list)
+		shift
+		echo "The following versions are available for download:"
+		echo $(grep -o $PATTERN <<< $VERSIONS)
+		exit 0
+		;;
+    	-*|--*=) # unsupported flags
+     		echo "Error: Unsupported flag $1" >&2
+      		exit 1
+      		;;
+    	*) # preserve positional arguments
+		if $version_set; 
+		then
+			echo "Version was set multiple times (${VERSION} and ${1})."
+			echo "Check the command's sytax."
+		fi
+		if [[ $VERSIONS != *"${1}"* ]]; 
+		then
+			echo "Version ${1} Inexistent or Unavailable..."
+			echo "Try installing one of the following versions:"
+			echo $(grep -o $PATTERN <<< $VERSIONS)
+			exit 1
+		else
+			version_set=true
+			VERSION=${1}
+		fi
+		shift
+		;;
+	esac
 done
 
+
+# CHECKING INSTALLATION PARAMETERS
 APPENDIX=""
 if [[ $VERSION == "${LATEST}" ]];
 then
@@ -41,7 +79,13 @@ echo "VERSION:  ${VERSION} ${APPENDIX}"
 printf "\n------------------------------------\n"
 
 
-
+while true; do
+    	read -p "Proceed with installation? [y/n] " yn
+    	case $yn in
+       		[Yy]* ) break;;
+        	[Nn]* ) exit;;
+    	esac
+done
 
 
 # Installation for UBUNTU distros
