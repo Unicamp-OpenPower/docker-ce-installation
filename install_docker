@@ -2,6 +2,7 @@
 set -e
 
 command -v wget >/dev/null 2>&1 || { echo >&2 "I require wget but it's not installed.  Aborting."; exit 1; }
+command -v git >/dev/null 2>&1 || { echo >&2 "I require git but it's not installed.  Aborting."; exit 1; }
 
 FTP="https://oplab9.parqtec.unicamp.br/pub/ppc64el/docker/"
 PATTERN="[0-9][0-9]\.[0-9][0-9]\.[0-9]"
@@ -12,10 +13,10 @@ VERSION=$LATEST
 
 # GETTING HOST MACHINE'S DISTRO
 case "$(hostnamectl | grep -oi 'Ubuntu 18\|Ubuntu 16\|Debian .* 9\|CentOS .* 7' | head -1)" in
-"Ubuntu 18") DISTRO="bionic" ;;
-"Ubuntu 16") DISTRO="xenial" ;;
-"Debian .* 9") DISTRO="stretch" ;;
-"CentOS .* 7") DISTRO="centos7" ;;
+Ubuntu\ 18) DISTRO="bionic" ;;
+Ubuntu\ 16) DISTRO="xenial" ;;
+Debian\ .*\ 9) DISTRO="stretch" ;;
+CentOS\ .*\ 7) DISTRO="centos7" ;;
 *)
 	echo "Your distro is not supported or does not have any pre-built packages."
 esac
