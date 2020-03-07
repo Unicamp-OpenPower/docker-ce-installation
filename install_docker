@@ -15,8 +15,8 @@ VERSION=$LATEST
 case "$(hostnamectl | grep -oi 'Ubuntu 18\|Ubuntu 16\|Debian .* 9\|CentOS .* 7' | head -1)" in
 Ubuntu\ 18) DISTRO="bionic" ;;
 Ubuntu\ 16) DISTRO="xenial" ;;
-Debian\ .*\ 9) DISTRO="stretch" ;;
-CentOS\ .*\ 7) DISTRO="centos7" ;;
+Debian\ *\ 9) DISTRO="stretch" ;;
+CentOS\ *\ 7) DISTRO="centos7" ;;
 *)
 	echo "Your distro is not supported or does not have any pre-built packages."
 esac
