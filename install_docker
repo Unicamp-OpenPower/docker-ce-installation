@@ -12,11 +12,12 @@ LATEST=$(grep $PATTERN <<< $VERSIONS | tr " " "\n" | tail -1)
 VERSION=$LATEST
 
 # GETTING HOST MACHINE'S DISTRO
-case "$(hostnamectl | grep -oi 'Ubuntu 18\|Ubuntu 16\|Debian .* 9\|CentOS .* 7' | head -1)" in
+case "$(hostnamectl | grep -oi 'Ubuntu 18\|Ubuntu 16\|Debian .* 9\|CentOS .* 7\|Red Hat .* 8' | head -1)" in
 Ubuntu\ 18) DISTRO="bionic" ;;
 Ubuntu\ 16) DISTRO="xenial" ;;
 Debian\ *\ 9) DISTRO="stretch" ;;
 CentOS\ *\ 7) DISTRO="centos7" ;;
+Red\ Hat\ .*\ 8 DISTRO="rhel8" ;;
 *)
 	echo "Your distro is not supported or does not have any pre-built packages."
 esac
@@ -111,11 +112,8 @@ then
 	exit
 fi
 
-
-
-
-# Installation for CENTOS distros
-if [[ "centos7" == *"${DISTRO}"* ]];
+# Installation for CENTOS/RHEL distros
+if [[ "centos7 rhel8" == *"${DISTRO}"* ]];
 then
 	DOCKER="docker-ce-${VERSION}-3.el7.ppc64le.rpm"
 	DOCKER_CLI="docker-ce-cli-${VERSION}-3.el7.ppc64le.rpm"
@@ -150,9 +148,6 @@ then
 
 	exit
 fi
-
-
-
 
 # Installation for Debian distros
 if [[ "stretch" == *"${DISTRO}"* ]];
