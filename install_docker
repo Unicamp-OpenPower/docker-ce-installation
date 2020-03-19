@@ -17,7 +17,7 @@ Ubuntu\ 18) DISTRO="bionic" ;;
 Ubuntu\ 16) DISTRO="xenial" ;;
 Debian\ *\ 9) DISTRO="stretch" ;;
 CentOS\ *\ 7) DISTRO="centos7" ;;
-Red\ Hat\ .*\ 8 DISTRO="rhel8" ;;
+Red\ Hat\ .*\ 8) DISTRO="rhel8" ;;
 *)
 	echo "Your distro is not supported or does not have any pre-built packages."
 esac
